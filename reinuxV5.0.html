@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reinux - Potencia tu Talento en la Era Digital</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Poppins e Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Custom Tailwind configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'petroleo': '#007C80',
+                        'petroleo-claro': '#00999D', /* New color for the title */
+                        'gris-oscuro': '#1F2E35',
+                        'gris-azulado': '#6CA6B2',
+                        'gris-claro': '#F1F3F4',
+                        'celeste-pastel': '#8EE3FD'
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                        'inter': ['Inter', 'sans-serif']
+                    },
+                    spacing: {
+                        'navbar-height': '4rem', /* Fixed nav bar height */
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Remove default browser margins and paddings */
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden; /* Prevent horizontal scroll on mobile */
+        }
+
+        /* Base style for smooth transitions of collapsible elements (FAQ) */
+        .collapsible-answer {
+            transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out, padding-top 0.5s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            padding-top: 0;
+        }
+        .collapsible-answer.open {
+            max-height: 9999px; /* A large value to allow dynamic content */
+            opacity: 1;
+            padding-top: 1rem; /* Padding to separate content from title */
+        }
+        .collapsible-arrow {
+            transition: transform 0.3s ease-in-out;
+        }
+        .collapsible-arrow.rotated {
+            transform: rotate(180deg);
+        }
+
+        /* Adjustments for the header image container */
+        .header-bg-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Ensure image does not overflow */
+            z-index: 0; /* Place image in background */
+        }
+        .header-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.05); /* Semi-transparent dark layer - Reduced opacity */
+            z-index: 1; /* Above the image */
+        }
+        .header-content {
+            position: relative;
+            z-index: 2; /* Above the dark layer */
+        }
+
+        /* Specific styles for week quadrants (now fixed and with hover) */
+        .week-card {
+            transition: all 0.3s ease-in-out;
+            border: 1px solid #e2e8f0; /* Default border */
+        }
+        .week-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* More shadow on hover */
+            transform: scale(1.02); /* Slightly larger on hover */
+            border-color: #007C80; /* Petroleo color for active border */
+        }
+
+        /* Alignment and spacing of week titles and content */
+        .week-card-inner {
+            padding: 1.5rem; /* Adjust inner padding for top space */
+            text-align: left; /* Align text to the left */
+        }
+        .week-card-inner h4 {
+            margin-top: 0.5rem; /* Space between p and h4 */
+        }
+        .week-icon-container {
+            text-align: center; /* Center the icon */
+            margin-bottom: 1rem; /* Space below the icon */
+        }
+
+        /* Mobile menu styles */
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 40;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .mobile-menu-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%; /* Start off-screen */
+            width: 75%; /* Adjust width as needed */
+            max-width: 300px;
+            height: 100%;
+            background-color: white;
+            z-index: 50;
+            transition: right 0.3s ease-in-out;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+            padding-top: 4rem; /* Space for the fixed header */
+        }
+        .mobile-menu.open {
+            right: 0; /* Slide in */
+        }
+
+        /* Animation for benefits bullets */
+        .bullet-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .bullet-item.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-white font-inter text-gris-oscuro antialiased">
+
+    <!-- Fixed Top Navigation Bar -->
+    <nav class="fixed top-0 left-0 w-full bg-white shadow-md z-50 py-2 px-6 md:px-12 flex justify-between items-center" style="height: theme('spacing.navbar-height');">
+        <!-- Logo on fixed bar -->
+        <a href="#inicio" class="flex-shrink-0">
+            <img src="https://github.com/juanbls100/reinuxV3.0/blob/main/Logo%20horizontal%20fondo%20transparente.png?raw=true" alt="Logo de Reinux" class="h-12 w-auto" onerror="this.onerror=null;this.src='https://placehold.co/150x48/007C80/FFFFFF?text=Reinux';" />
+        </a>
+        
+        <!-- Desktop Navigation (hidden on mobile) -->
+        <ul class="hidden md:flex flex-wrap justify-center space-x-4 md:space-x-8 font-semibold">
+            <li><a href="#que-es-reinux" class="text-gris-oscuro hover:text-celeste-pastel transition-all duration-200 transform hover:scale-105 inline-block py-2">¿Qué es Reinux?</a></li>
+            <li><a href="#que-vas-a-lograr" class="text-gris-oscuro hover:text-celeste-pastel transition-all duration-200 transform hover:scale-105 inline-block py-2">¿Qué vas a lograr?</a></li>
+            <li><a href="#para-ti" class="text-gris-oscuro hover:text-celeste-pastel transition-all duration-200 transform hover:scale-105 inline-block py-2">¿Es para ti?</a></li>
+            <li><a href="#contenido" class="text-gris-oscuro hover:text-celeste-pastel transition-all duration-200 transform hover:scale-105 inline-block py-2">¿Qué aprenderás?</a></li>
+            <li><a href="#testimonios" class="text-gris-oscuro hover:text-celeste-pastel transition-all duration-200 transform hover:scale-105 inline-block py-2">Testimonios</a></li>
+            <li><a href="#cierre-cta" class="text-gris-oscuro hover:text-celeste-pastel transition-all duration-200 transform hover:scale-105 inline-block py-2">Inscribirme</a></li>
+            <li><a href="#contacto" class="text-gris-oscuro hover:text-celeste-pastel transition-all duration-200 transform hover:scale-105 inline-block py-2">Contacto</a></li>
+        </ul>
+
+        <!-- Hamburger Menu Button (visible on mobile) -->
+        <button id="hamburger-menu" class="md:hidden p-2 text-gris-oscuro focus:outline-none">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu-overlay" class="mobile-menu-overlay"></div>
+
+    <!-- Mobile Menu Sidebar -->
+    <div id="mobile-menu" class="mobile-menu">
+        <div class="flex justify-end p-4">
+            <button id="close-mobile-menu" class="p-2 text-gris-oscuro focus:outline-none">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <ul class="flex flex-col items-center space-y-6 text-gris-oscuro font-semibold py-8">
+            <li><a href="#que-es-reinux" class="text-lg hover:text-celeste-pastel transition-colors duration-200 mobile-nav-link">¿Qué es Reinux?</a></li>
+            <li><a href="#que-vas-a-lograr" class="text-lg hover:text-celeste-pastel transition-colors duration-200 mobile-nav-link">¿Qué vas a lograr?</a></li>
+            <li><a href="#para-ti" class="text-lg hover:text-celeste-pastel transition-colors duration-200 mobile-nav-link">¿Es para ti?</a></li>
+            <li><a href="#contenido" class="text-lg hover:text-celeste-pastel transition-colors duration-200 mobile-nav-link">¿Qué aprenderás?</a></li>
+            <li><a href="#testimonios" class="text-lg hover:text-celeste-pastel transition-colors duration-200 mobile-nav-link">Testimonios</a></li>
+            <li><a href="#cierre-cta" class="text-lg hover:text-celeste-pastel transition-colors duration-200 mobile-nav-link">Inscribirme</a></li>
+            <li><a href="#contacto" class="text-lg hover:text-celeste-pastel transition-colors duration-200 mobile-nav-link">Contacto</a></li>
+        </ul>
+    </div>
+
+    <main class="mt-navbar-height">
+        <!-- 1. Encabezado -->
+        <header id="inicio" class="relative min-h-[500px] flex items-center justify-center text-white">
+            <!-- Background image container -->
+            <div class="header-bg-container">
+                <img src="https://github.com/juanbls100/reinuxV2.0/blob/main/Untitled%20(1000%20x%20500%20px)%20(2).png?raw=true" alt="Hombre maduro con laptop negra" class="w-full h-full object-cover object-center" onerror="this.onerror=null;this.src='https://placehold.co/1920x1080/6CA6B2/FFFFFF?text=Imagen+de+Encabezado';" />
+            </div>
+            <!-- Dark overlay layer on the image -->
+            <div class="header-overlay"></div>
+
+            <!-- Header content -->
+            <div class="container mx-auto px-6 py-4 md:py-8 header-content">
+                <div class="text-center pt-8 md:pt-12">
+                    <h1 class="text-4xl md:text-6xl font-poppins font-bold leading-tight mb-4 text-petroleo-claro">
+                        Actualízate en tecnología y mejora tu futuro profesional
+                    </h1>
+                    <p class="text-lg md:text-xl text-gris-azulado font-bold max-w-3xl mx-auto mb-8">
+                        Un curso diseñado para mayores de 40 que quieren dominar herramientas digitales para trabajar mejor o emprender con inteligencia
+                    </p>
+                    <a href="#cierre-cta" class="bg-petroleo text-white font-bold font-poppins py-4 px-10 rounded-full inline-block shadow-lg hover:bg-opacity-90 transform hover:-translate-y-1 transition-all duration-300">
+                        Quiero inscribirme ahora
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- New Section: ¿Qué es Reinux? -->
+        <section id="que-es-reinux" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6 text-center max-w-4xl">
+                <h2 class="text-3xl md:text-4xl font-poppins font-bold mb-6 text-gris-oscuro">¿Qué es Reinux?</h2>
+                <p class="text-lg text-gris-azulado leading-relaxed">
+                    Reinux es una experiencia de aprendizaje digital pensada para personas mayores de 40 años que quieren actualizarse en tecnología, sin complicaciones ni tecnicismos. Aprenderás paso a paso a organizar tu información, automatizar tareas y tomar mejores decisiones con herramientas digitales sencillas y útiles.
+                </p>
+            </div>
+        </section>
+
+        <!-- New Section: ¿Qué vas a lograr? -->
+        <section id="que-vas-a-lograr" class="bg-gris-claro py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-poppins font-bold mb-4">¿Qué vas a lograr?</h2>
+                    <p class="text-lg text-gris-azulado max-w-2xl mx-auto">Con Reinux, transformarás tu día a día digital con resultados concretos.</p>
+                </div>
+                <div class="max-w-3xl mx-auto">
+                    <ul class="space-y-4">
+                        <li class="flex items-start bg-white p-6 rounded-lg shadow-sm bullet-item">
+                            <svg class="w-6 h-6 text-petroleo mr-4 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <div>
+                                <h4 class="font-bold text-lg">Organizar mejor tus ventas, clientes y tareas desde tu computadora o celular</h4>
+                            </div>
+                        </li>
+                        <li class="flex items-start bg-white p-6 rounded-lg shadow-sm bullet-item">
+                            <svg class="w-6 h-6 text-petroleo mr-4 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <div>
+                                <h4 class="font-bold text-lg">Tener el control total de tu negocio o área de trabajo</h4>
+                            </div>
+                        </li>
+                        <li class="flex items-start bg-white p-6 rounded-lg shadow-sm bullet-item">
+                            <svg class="w-6 h-6 text-petroleo mr-4 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></path></svg>
+                            <div>
+                                <h4 class="font-bold text-lg">Crear reportes automáticos que te ahorren tiempo</h4>
+                            </div>
+                        </li>
+                        <li class="flex items-start bg-white p-6 rounded-lg shadow-sm bullet-item">
+                            <svg class="w-6 h-6 text-petroleo mr-4 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <div>
+                                <h4 class="font-bold text-lg">Tomar decisiones basadas en datos reales, no suposiciones</h4>
+                            </div>
+                        </li>
+                        <li class="flex items-start bg-white p-6 rounded-lg shadow-sm bullet-item">
+                            <svg class="w-6 h-6 text-petroleo mr-4 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <div>
+                                <h4 class="font-bold text-lg">Recuperar la confianza en ti y en lo que puedes lograr con tecnología</h4>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: ¿Este curso es para ti? -->
+        <section id="para-ti" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl md:text-4xl font-poppins font-bold mb-4">¿Este curso es para ti?</h2>
+                <p class="text-lg text-gris-azulado max-w-2xl mx-auto mb-12">Si buscas dominar las herramientas digitales para impulsar tu vida profesional, emprender o simplemente ser más eficiente, estás en el lugar correcto. Reinux está diseñado para ti si:</p>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Affirmation 1 -->
+                    <div class="bg-white p-8 rounded-xl shadow-md border border-gray-200 transform hover:scale-105 hover:shadow-lg transition-all duration-300">
+                        <div class="text-petroleo mb-4 flex justify-center items-center">
+                            <!-- Icono de Velocidad/Progreso -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-10 w-10">
+                                <path d="M12 2c-5.523 0-10 4.477-10 10s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8zM11 11V7h2v4h4v2h-4v4h-2v-4H7v-2h4z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-poppins font-semibold text-xl mb-2">Sí, si quieres aprender desde cero sin sentirte perdido o fuera de lugar.</h3>
+                    </div>
+                    <!-- Affirmation 2 -->
+                    <div class="bg-white p-8 rounded-xl shadow-md border border-gray-200 transform hover:scale-105 hover:shadow-lg transition-all duration-300">
+                        <div class="text-petroleo mb-4 flex justify-center items-center">
+                            <!-- Icono de Negocio/Documento -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-10 w-10">
+                                <path d="M19 3H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2zM5 19V5h14l.002 14H5zm2-8h10v2H7v-2zm0 4h10v2H7v-2zm0-8h10v2H7V7z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-poppins font-semibold text-xl mb-2">Sí, si trabajas en una empresa y quieres destacar con habilidades nuevas.</h3>
+                    </div>
+                    <!-- Affirmation 3 -->
+                    <div class="bg-white p-8 rounded-xl shadow-md border border-gray-200 transform hover:scale-105 hover:shadow-lg transition-all duration-300">
+                        <div class="text-petroleo mb-4 flex justify-center items-center">
+                            <!-- New Ascending Graph Icon (more defined) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-10 w-10">
+                                <path d="M2.27 18.39a1 1 0 00.32.74c.2.19.46.3.74.3h17.34a1 1 0 00.74-.32 1 1 0 00.32-.74V5.61a1 1 0 00-.32-.74 1 1 0 00-.74-.32H3.33a1 1 0 00-.74.32 1 1 0 00-.32.74v12.78zM4 6.47h16v11.06L4 6.47zm13.71 4.58l-5.38 5.38-2.6-2.6-5.46 5.46-1.41-1.41 6.87-6.87 2.6-2.6 5.38 5.38z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-poppins font-semibold text-xl mb-2">Sí, si tienes un negocio y quieres organizar mejor tu operación.</h3>
+                    </div>
+                     <!-- Affirmation 4 -->
+                     <div class="bg-white p-8 rounded-xl shadow-md border border-gray-200 transform hover:scale-105 hover:shadow-lg transition-all duration-300">
+                        <div class="text-petroleo mb-4 flex justify-center items-center">
+                            <!-- New Icon, choose an appropriate one, e.g., a hand pointing -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-10 w-10">
+                                <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM11 11V7H13V11H17V13H13V17H11V13H7V11H11Z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-poppins font-semibold text-xl mb-2">Sí, si quieres dejar de depender de otros para manejar herramientas digitales.</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: ¿Qué aprenderás? (Course Content - Accordion) -->
+        <section id="contenido" class="py-16 md:py-24 bg-gris-claro">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-poppins font-bold mb-4">¿Qué aprenderás? Un camino claro, semana a semana</h2>
+                    <p class="text-lg text-gris-azulado max-w-2xl mx-auto">Este es el plan de 6 semanas que te convertirá en un experto digital.</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Semana 1 -->
+                    <div class="bg-white rounded-lg shadow-md collapsible-container">
+                        <button class="collapsible-question w-full flex justify-between items-center text-left p-6 font-semibold text-lg transform transition-all duration-300">
+                            <div>
+                                <p class="font-bold text-petroleo mb-1">Semana 1</p>
+                                <h4 class="font-poppins font-semibold text-lg">Organiza tu información como un profesional</h4>
+                            </div>
+                            <svg class="collapsible-arrow w-6 h-6 text-petroleo flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="collapsible-answer px-6 pb-6 text-gris-azulado">
+                            <p>Aprenderás a construir una base clara para registrar ventas, clientes o inventarios (usando Google Sheets y formularios simples), sin necesidad de experiencia previa.</p>
+                        </div>
+                    </div>
+                    <!-- Semana 2 -->
+                    <div class="bg-white rounded-lg shadow-md collapsible-container">
+                        <button class="collapsible-question w-full flex justify-between items-center text-left p-6 font-semibold text-lg transform transition-all duration-300">
+                            <div>
+                                <p class="font-bold text-petroleo mb-1">Semana 2</p>
+                                <h4 class="font-poppins font-semibold text-lg">Automatiza tareas sin complicarte</h4>
+                            </div>
+                            <svg class="collapsible-arrow w-6 h-6 text-petroleo flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="collapsible-answer px-6 pb-6 text-gris-azulado">
+                            <p>Descubrirás cómo dejar de hacer registros manuales con ayuda de formularios automáticos y reglas simples (Google Forms y automatizaciones en Sheets).</p>
+                        </div>
+                    </div>
+                    <!-- Semana 3 -->
+                    <div class="bg-white rounded-lg shadow-md collapsible-container">
+                        <button class="collapsible-question w-full flex justify-between items-center text-left p-6 font-semibold text-lg transform transition-all duration-300">
+                            <div>
+                                <p class="font-bold text-petroleo mb-1">Semana 3</p>
+                                <h4 class="font-poppins font-semibold text-lg">Reportes visuales fáciles de entender</h4>
+                            </div>
+                            <svg class="collapsible-arrow w-6 h-6 text-petroleo flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="collapsible-answer px-6 pb-6 text-gris-azulado">
+                            <p>Crearás reportes con gráficos y tablas que se actualizan solos (dentro de Google Sheets), para tener claridad sobre tu negocio o área de trabajo.</p>
+                        </div>
+                    </div>
+                    <!-- Semana 4 -->
+                    <div class="bg-white rounded-lg shadow-md collapsible-container">
+                        <button class="collapsible-question w-full flex justify-between items-center text-left p-6 font-semibold text-lg transform transition-all duration-300">
+                            <div>
+                                <p class="font-bold text-petroleo mb-1">Semana 4</p>
+                                <h4 class="font-poppins font-semibold text-lg">Crea un dashboard interactivo</h4>
+                            </div>
+                            <svg class="collapsible-arrow w-6 h-6 text-petroleo flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="collapsible-answer px-6 pb-6 text-gris-azulado">
+                            <p>Conectarás tu base de datos a un tablero visual (Looker Studio + Google Sheets) donde verás todo ordenado y filtrable, sin programar.</p>
+                        </div>
+                    </div>
+                    <!-- Semana 5 -->
+                    <div class="bg-white rounded-lg shadow-md collapsible-container">
+                        <button class="collapsible-question w-full flex justify-between items-center text-left p-6 font-semibold text-lg transform transition-all duration-300">
+                            <div>
+                                <p class="font-bold text-petroleo mb-1">Semana 5</p>
+                                <h4 class="font-poppins font-semibold text-lg">Toma decisiones con base en datos</h4>
+                            </div>
+                            <svg class="collapsible-arrow w-6 h-6 text-petroleo flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="collapsible-answer px-6 pb-6 text-gris-azulado">
+                            <p>Aprenderás a interpretar la información y detectar oportunidades o errores (usando filtros, gráficos y comparativos dentro de tu dashboard).</p>
+                        </div>
+                    </div>
+                    <!-- Semana 6 -->
+                    <div class="bg-white rounded-lg shadow-md collapsible-container">
+                        <button class="collapsible-question w-full flex justify-between items-center text-left p-6 font-semibold text-lg transform transition-all duration-300">
+                            <div>
+                                <p class="font-bold text-petroleo mb-1">Semana 6</p>
+                                <h4 class="font-poppins font-semibold text-lg">Proyecto final personalizado</h4>
+                            </div>
+                            <svg class="collapsible-arrow w-6 h-6 text-petroleo flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="collapsible-answer px-6 pb-6 text-gris-azulado">
+                            <p>Aplicarás todo lo aprendido para crear tu propio sistema digital completo (con automatización, reportes y dashboard), útil para tu trabajo o negocio.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Section: Testimonios -->
+        <section id="testimonios" class="bg-gris-claro py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-poppins font-bold mb-4">No tienes que creernos a nosotros</h2>
+                    <p class="text-lg text-gris-azulado max-w-2xl mx-auto">Mira lo que dicen nuestros alumnos.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <!-- Testimonial 1 -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg">
+                        <p class="text-gris-azulado mb-4">"Aprendí más en este curso que en años de intentar por mi cuenta."</p>
+                        <p class="font-bold font-poppins">- Alumno de Reinux</p>
+                    </div>
+                    <!-- Testimonial 2 -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg">
+                        <p class="text-gris-azulado mb-4">"Nunca pensé que podría crear reportes profesionales. Hoy lo hago diario."</p>
+                        <p class="font-bold font-poppins">- Alumna de Reinux</p>
+                    </div>
+                     <!-- Testimonial 3 -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg">
+                        <p class="text-gris-azulado mb-4">"Gracias a Reinux ahora llevo mejor mi negocio y tengo más tiempo para mí."</p>
+                        <p class="font-bold font-poppins">- Alumno de Reinux</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Cierre + CTA -->
+        <section id="cierre-cta" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6 max-w-4xl">
+                <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+                    <div class="w-full md:w-1/2 text-center md:text-left">
+                        <h2 class="text-3xl md:text-4xl font-poppins font-bold text-gris-oscuro mb-6">
+                            No se trata de edad. Se trata de actitud.
+                        </h2>
+                        <p class="text-lg text-gris-azulado mb-8">
+                            Empieza hoy tu transformación digital con Reinux.
+                        </p>
+                        <div class="flex flex-col md:flex-row justify-center md:justify-start gap-4"> <!-- Modificación aquí: sm:flex-row a md:flex-row -->
+                            <a href="#precio" class="bg-petroleo text-white font-bold font-poppins py-4 px-10 rounded-full inline-block shadow-lg w-full sm:w-auto hover:bg-opacity-90 transform hover:-translate-y-1 transition-all duration-300 text-xl">
+                                Quiero inscribirme ahora
+                            </a>
+                            <a href="https://wa.me/TUNUMERODEWHATSAPP" target="_blank" class="bg-gris-oscuro text-white font-bold font-poppins py-4 px-10 rounded-full inline-block shadow-lg w-full sm:w-auto hover:bg-opacity-90 transform hover:-translate-y-1 transition-all duration-300 text-xl">
+                                Quiero más información →
+                            </a>
+                        </div>
+                        <p class="text-sm text-gris-azulado mt-4">Cupos limitados. Iniciamos pronto.</p>
+                    </div>
+                    <div class="w-full md:w-1/2 mt-8 md:mt-0">
+                        <!-- Emotional and aspirational image -->
+                        <img src="https://placehold.co/800x450/6CA6B2/FFFFFF?text=Imagen+Aspiracional" alt="Persona usando tecnología felizmente" class="w-full h-auto rounded-lg shadow-xl object-cover" />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Contact Form -->
+        <section id="contacto" class="py-16 md:py-24">
+            <div class="container mx-auto px-6 max-w-2xl">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-poppins font-bold mb-4">¿Algo más en qué podamos ayudarte?</h2>
+                    <p class="text-lg text-gris-azulado">Envíanos un mensaje y te responderemos lo antes posible.</p>
+                </div>
+                <!-- Contact form quadrant with light color -->
+                <div class="bg-gris-claro rounded-2xl shadow-xl p-8 md:p-12 border border-gris-claro">
+                    <form action="#" method="POST" class="space-y-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gris-oscuro mb-2">Tu Nombre</label>
+                            <input type="text" id="name" name="name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-petroleo focus:border-petroleo" placeholder="Escribe tu nombre completo" required>
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gris-oscuro mb-2">Tu Correo Electrónico</label>
+                            <input type="email" id="email" name="email" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-petroleo focus:border-petroleo" placeholder="ejemplo@correo.com" required>
+                        </div>
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gris-oscuro mb-2">Tu Mensaje</label>
+                            <textarea id="message" name="message" rows="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-petroleo focus:border-petroleo" placeholder="Escribe tu consulta aquí..." required></textarea>
+                        </div>
+                        <button type="submit" class="bg-petroleo text-white font-bold font-poppins py-3 px-8 rounded-full inline-block shadow-lg w-full hover:bg-opacity-90 transform hover:-translate-y-1 transition-all duration-300">
+                            Enviar Mensaje
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gris-oscuro py-12">
+        <div class="container mx-auto px-6 text-center text-white">
+            <!-- New Logo in footer -->
+            <div class="inline-block mb-8">
+                <img src="https://github.com/juanbls100/reinux/blob/main/Untitled%20(1000%20x%20500%20px).png?raw=true" alt="Nuevo Logo de Reinux" class="h-16 w-auto" onerror="this.onerror=null;this.src='https://placehold.co/200x60/007C80/FFFFFF?text=Nuevo+Logo';" />
+            </div>
+            <p class="text-gris-claro mb-4">Potenciando tu talento en la era digital.</p>
+            <p class="text-sm text-gris-azulado">&copy; 2024 Reinux. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // JavaScript for FAQ collapsible elements
+            const faqCollapsibleQuestions = document.querySelectorAll('#faq .collapsible-question');
+
+            faqCollapsibleQuestions.forEach(button => {
+                button.addEventListener('click', () => {
+                    const answer = button.nextElementSibling;
+                    const arrow = button.querySelector('.collapsible-arrow');
+                    const parentContainer = button.closest('.collapsible-container'); 
+
+                    if (answer.classList.contains('open')) {
+                        answer.classList.remove('open');
+                        arrow.classList.remove('rotated');
+                        parentContainer.classList.remove('open'); 
+                    } else {
+                        // Close other open answers in the same group
+                        document.querySelectorAll('#faq .collapsible-container').forEach(otherContainer => {
+                            const otherButton = otherContainer.querySelector('.collapsible-question');
+                            if (otherContainer !== parentContainer && otherButton) {
+                                const otherAnswer = otherButton.nextElementSibling;
+                                const otherArrow = otherButton.querySelector('.collapsible-arrow');
+                                if (otherAnswer && otherAnswer.classList.contains('open')) {
+                                    otherAnswer.classList.remove('open');
+                                    otherArrow.classList.remove('rotated');
+                                    otherContainer.classList.remove('open');
+                                }
+                            }
+                        });
+
+                        // Open the current answer
+                        answer.classList.add('open');
+                        arrow.classList.add('rotated');
+                        parentContainer.classList.add('open'); 
+                    }
+                });
+            });
+
+            // JavaScript for Content (Weeks) collapsible elements (re-enabled accordion)
+            const contentCollapsibleQuestions = document.querySelectorAll('#contenido .collapsible-question');
+
+            contentCollapsibleQuestions.forEach(button => {
+                button.addEventListener('click', () => {
+                    const answer = button.nextElementSibling;
+                    const arrow = button.querySelector('.collapsible-arrow');
+                    const parentContainer = button.closest('.collapsible-container'); 
+
+                    if (answer.classList.contains('open')) {
+                        answer.classList.remove('open');
+                        arrow.classList.remove('rotated');
+                        parentContainer.classList.remove('open'); 
+                    } else {
+                        // Close other open answers in the same group
+                        document.querySelectorAll('#contenido .collapsible-container').forEach(otherContainer => {
+                            const otherButton = otherContainer.querySelector('.collapsible-question');
+                            if (otherContainer !== parentContainer && otherButton) {
+                                const otherAnswer = otherButton.nextElementSibling;
+                                const otherArrow = otherButton.querySelector('.collapsible-arrow');
+                                if (otherAnswer && otherAnswer.classList.contains('open')) {
+                                    otherAnswer.classList.remove('open');
+                                    otherArrow.classList.remove('rotated');
+                                    otherContainer.classList.remove('open');
+                                }
+                            }
+                        });
+
+                        // Open the current answer
+                        answer.classList.add('open');
+                        arrow.classList.add('rotated');
+                        parentContainer.classList.add('open'); 
+                    }
+                });
+            });
+
+            // Mobile menu toggle functionality
+            const hamburgerMenu = document.getElementById('hamburger-menu');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const closeMobileMenu = document.getElementById('close-mobile-menu');
+            const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+            const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+
+            function toggleMobileMenu() {
+                mobileMenu.classList.toggle('open');
+                mobileMenuOverlay.classList.toggle('open');
+                document.body.classList.toggle('overflow-hidden'); // Prevent scrolling body when menu is open
+            }
+
+            hamburgerMenu.addEventListener('click', toggleMobileMenu);
+            closeMobileMenu.addEventListener('click', toggleMobileMenu);
+            mobileMenuOverlay.addEventListener('click', toggleMobileMenu); // Close when clicking outside menu
+
+            // Close mobile menu when a link is clicked
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (mobileMenu.classList.contains('open')) {
+                        toggleMobileMenu();
+                    }
+                });
+            });
+
+            // Animate bullets on scroll (simple fade-in)
+            const bulletItems = document.querySelectorAll('.bullet-item');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target); // Stop observing once animated
+                    }
+                });
+            }, observerOptions);
+
+            bulletItems.forEach(item => {
+                observer.observe(item);
+            });
+        });
+    </script>
+</body>
+</html>
